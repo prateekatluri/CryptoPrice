@@ -1,14 +1,14 @@
-import React, { createContext } from "react";
 import CryptoTable from "../components/CryptoTable";
 import Filter from "../components/Filter";
 import { useState } from "react";
-
+import { CryptoContext } from "../context/CryptoContext";
 function Crypto() {
+  const [searchCoin, setSearchCoin] = useState("");
   return (
-    <div>
+    <CryptoContext.Provider value={{ searchCoin, setSearchCoin }}>
       <Filter />
       <CryptoTable />
-    </div>
+    </CryptoContext.Provider>
   );
 }
 

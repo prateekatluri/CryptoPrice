@@ -1,26 +1,48 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import searchIcon from "../assets/search-icon.svg";
+import { CryptoContext } from "../context/CryptoContext";
+import { debounce } from "lodash";
+
 function Search(props) {
   const [searchValue, setSearchValue] = useState("");
   const [searchList, setSearchList] = useState([]);
+  //to display only the coin which is clicked
+  const { searchCoin, setSearchCoin } = useContext(CryptoContext);
+
   async function handleFetch() {
     const data = await axios.get(
       `https://api.coingecko.com/api/v3/search?query=${searchValue}`
     );
     setSearchList(data.data.coins);
   }
+  var debouncehandleFetch = debounce(function () {
+    handleFetch();
+  }, 3000);
   const handleChange = (e) => {
     const value = e.target.value;
     setSearchValue(value);
-    handleFetch();
+    debouncehandleFetch();
   };
+
+  // const handleChangeDebounce = debounce();
+  const handleSearchClick = (id) => {
+    setSearchCoin(id);
+    setSearchValue("");
+  };
+
   return (
     <form className="flex ml-4 w-96 h-10 items-center">
       {searchValue.length > 0 && (
         <ul className="absolute top-40 backdrop-blur-3xl h-96 w-96 overflow-y-scroll ">
           {searchList.map((data) => (
-            <li id={data.id} className="ml-1 mt-2 flex mb-2 cursor-pointer">
+            <li
+              key={data.id}
+              onClick={() => {
+                handleSearchClick(data.id);
+              }}
+              className="ml-1 mt-2 flex mb-2 cursor-pointer"
+            >
               <img src={data.thumb} alt="coin_image" className="pl-1 pr-1" />
               {data.name}
             </li>
