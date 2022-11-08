@@ -1,8 +1,18 @@
 import axios from "axios";
-import React, { useEffect, useState, useLayoutEffect } from "react";
-
+import React, { useEffect, useState, useContext } from "react";
+import { CryptoContext } from "../context/CryptoContext";
 function CryptoTable(props) {
   const [coinDetails, setCoinDetails] = useState([]);
+  const { searchCoin, setSearchCoin } = useContext(CryptoContext);
+  useEffect(() => {
+    async function fetchData() {
+      const data = await axios.get(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${searchCoin}&order=market_cap_desc&per_page=10&page=1&sparkline=false`
+      );
+      setCoinDetails(data.data);
+    }
+    fetchData();
+  }, [searchCoin]);
   useEffect(() => {
     async function fetchData() {
       const data = await axios.get(
